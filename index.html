@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>MiR Union</title>
+    <title>Oljimir</title>
 
     <!-- FAVICONS -->
     <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="MiR Union" />
+    <meta name="apple-mobile-web-app-title" content="Oljimir" />
 
     <style>
       [v-cloak] {
@@ -113,7 +113,7 @@
 
   <body>
     <div id="app" class="wrapper" v-cloak>
-      <div v-if="ended" class="ended">Dobrodošla!</div>
+      <div v-if="ended" class="ended">Dobrodošao!</div>
       <div v-else class="countdown">
         <div class="card" v-if="showDays">
           <div class="num">{{ days }}</div>
@@ -136,7 +136,7 @@
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script>
-      const END_ISO = "2025-12-28T23:15:00+01:00";
+      const END_ISO = "2025-11-18T12:00:00+01:00";
       const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
 
       createApp({
