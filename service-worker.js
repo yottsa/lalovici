@@ -1,4 +1,4 @@
-const CACHE_NAME = 'oljimir-cache-v1';
+const CACHE_NAME = 'lalovici-cache-v1';
 const FILES_TO_CACHE = [
   './',
   './index.html',
