@@ -6,9 +6,23 @@
     <title>Lalovići</title>
 
     <!-- FAVICONS -->
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icons/favicon-16x16.png"
+    />
 
     <!-- Android Chrome icons -->
     <link
@@ -113,7 +127,7 @@
 
   <body>
     <div id="app" class="wrapper" v-cloak>
-      <div v-if="ended" class="ended">Dobrodošao!</div>
+      <div v-if="ended" class="ended">{{ endMessage }}</div>
       <div v-else class="countdown">
         <div class="card" v-if="showDays">
           <div class="num">{{ days }}</div>
@@ -135,140 +149,6 @@
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <script>
-      const END_ISO = "2025-11-18T12:00:00+01:00";
-      const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
-
-      createApp({
-        setup() {
-          const endDate = new Date(END_ISO);
-
-          const days = ref(0);
-          const hours = ref(0);
-          const minutes = ref(0);
-          const seconds = ref(0);
-          const ended = ref(false);
-
-          const update = () => {
-            const now = new Date();
-            let diffMs = endDate.getTime() - now.getTime();
-            if (diffMs <= 0) {
-              ended.value = true;
-              days.value = hours.value = minutes.value = seconds.value = 0;
-              return;
-            }
-
-            const msInSecond = 1000;
-            const msInMinute = 60 * msInSecond;
-            const msInHour = 60 * msInMinute;
-            const msInDay = 24 * msInHour;
-
-            days.value = Math.floor(diffMs / msInDay);
-            diffMs %= msInDay;
-
-            hours.value = Math.floor(diffMs / msInHour);
-            diffMs %= msInHour;
-
-            minutes.value = Math.floor(diffMs / msInMinute);
-            diffMs %= msInMinute;
-
-            seconds.value = Math.floor(diffMs / msInSecond);
-          };
-
-          let timerId = null;
-
-          onMounted(() => {
-            update();
-            timerId = setInterval(update, 1000);
-          });
-
-          onBeforeUnmount(() => {
-            if (timerId) clearInterval(timerId);
-          });
-
-          const hoursPadded = computed(() =>
-            String(hours.value).padStart(2, "0")
-          );
-          const minutesPadded = computed(() =>
-            String(minutes.value).padStart(2, "0")
-          );
-          const secondsPadded = computed(() =>
-            String(seconds.value).padStart(2, "0")
-          );
-
-          const showDays = computed(() => days.value > 0);
-          const showHours = computed(() => hours.value > 0);
-          const showMinutes = computed(() => minutes.value > 0);
-          const showSeconds = computed(() => true);
-
-          const daysLabel = computed(() => (days.value == 1 ? "dan" : "dana"));
-          const hoursLabel = computed(() =>
-            hours.value == 1 ? "sat" : "sati"
-          );
-          const minutesLabel = computed(() =>
-            minutes.value == 1 ? "minut" : "minuta"
-          );
-          const secondsLabel = computed(() =>
-            seconds.value == 1 ? "sekundu" : "sekundi"
-          );
-
-          return {
-            days,
-            hours,
-            minutes,
-            seconds,
-            hoursPadded,
-            minutesPadded,
-            secondsPadded,
-            showDays,
-            showHours,
-            showMinutes,
-            showSeconds,
-            daysLabel,
-            hoursLabel,
-            minutesLabel,
-            secondsLabel,
-            ended,
-          };
-        },
-      }).mount("#app");
-
-      // Register service worker with auto-update
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("service-worker.js")
-            .then((reg) => {
-              console.log("Service Worker registered:", reg);
-
-              reg.addEventListener("updatefound", () => {
-                const newWorker = reg.installing;
-                if (newWorker) {
-                  newWorker.addEventListener("statechange", () => {
-                    if (
-                      newWorker.state === "installed" &&
-                      navigator.serviceWorker.controller
-                    ) {
-                      console.log("New version found — activating...");
-                      newWorker.postMessage("skipWaiting");
-                    }
-                  });
-                }
-              });
-
-              navigator.serviceWorker.addEventListener(
-                "controllerchange",
-                () => {
-                  console.log("Reloading for new SW...");
-                  window.location.reload();
-                }
-              );
-            })
-            .catch((err) =>
-              console.error("Service Worker registration failed:", err)
-            );
-        });
-      }
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>
