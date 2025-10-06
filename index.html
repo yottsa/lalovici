@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Vue Countdown (Days / Hours / Minutes)</title>
     <style>
+      [v-cloak] {
+        display: none !important;
+      }
       html,
       body,
       #app {
@@ -76,7 +79,7 @@
     </style>
   </head>
   <body>
-    <div id="app" class="wrapper">
+    <div id="app" class="wrapper" v-cloak>
       <div v-if="ended" class="ended">Countdown ended</div>
       <div v-else class="countdown">
         <div class="card" v-if="showDays">
