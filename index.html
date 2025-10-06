@@ -4,6 +4,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>MiR Union</title>
+
+    <!-- FAVICONS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+
+    <!-- Android Chrome icons -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="icons/android-chrome-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="icons/android-chrome-512x512.png"
+    />
+
+    <!-- PWA essentials -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f8f9fb" />
+    <link rel="icon" href="icons/icon-192.png" />
+
     <style>
       [v-cloak] {
         display: none !important;
@@ -64,20 +89,24 @@
         font-weight: 600;
       }
 
+      /* Mobile grid layout */
       @media (max-width: 600px) {
+        .countdown {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.8rem;
+        }
         .num {
           font-size: 1.5rem;
         }
         .card {
           padding: 0.6rem 1rem;
-          min-width: 50px;
-        }
-        .countdown {
-          gap: 0.6rem;
+          min-width: auto;
         }
       }
     </style>
   </head>
+
   <body>
     <div id="app" class="wrapper" v-cloak>
       <div v-if="ended" class="ended">Countdown ended</div>
@@ -104,7 +133,6 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script>
       const END_ISO = "2025-12-28T23:15:00+01:00";
-
       const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
 
       createApp({
@@ -117,10 +145,9 @@
           const seconds = ref(0);
           const ended = ref(false);
 
-          function update() {
+          const update = () => {
             const now = new Date();
             let diffMs = endDate.getTime() - now.getTime();
-
             if (diffMs <= 0) {
               ended.value = true;
               days.value = hours.value = minutes.value = seconds.value = 0;
@@ -142,7 +169,7 @@
             diffMs %= msInMinute;
 
             seconds.value = Math.floor(diffMs / msInSecond);
-          }
+          };
 
           let timerId = null;
 
@@ -201,6 +228,43 @@
           };
         },
       }).mount("#app");
+
+      // Register service worker with auto-update
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("service-worker.js")
+            .then((reg) => {
+              console.log("Service Worker registered:", reg);
+
+              reg.addEventListener("updatefound", () => {
+                const newWorker = reg.installing;
+                if (newWorker) {
+                  newWorker.addEventListener("statechange", () => {
+                    if (
+                      newWorker.state === "installed" &&
+                      navigator.serviceWorker.controller
+                    ) {
+                      console.log("New version found — activating...");
+                      newWorker.postMessage("skipWaiting");
+                    }
+                  });
+                }
+              });
+
+              navigator.serviceWorker.addEventListener(
+                "controllerchange",
+                () => {
+                  console.log("Reloading for new SW...");
+                  window.location.reload();
+                }
+              );
+            })
+            .catch((err) =>
+              console.error("Service Worker registration failed:", err)
+            );
+        });
+      }
     </script>
   </body>
 </html>
