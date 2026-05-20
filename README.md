@@ -57,20 +57,35 @@ The build emits `dist/` with hashed asset filenames, the PWA manifest, the servi
 
 ## Deployment to GitHub Pages
 
-Deployment is automated via `.github/workflows/deploy.yml`: every push to `main` (and manual `workflow_dispatch` runs) builds and publishes `dist/` to GitHub Pages.
+The site is built locally on your machine and published to a `gh-pages` branch using the [`gh-pages`](https://www.npmjs.com/package/gh-pages) package. No GitHub Actions, no server-side build.
 
-One-time repo setup:
+### One-time repo setup
 
-1. **Enable Pages**: Settings → Pages → Build and deployment → Source: **GitHub Actions**.
-2. **Set build variables**: Settings → Secrets and variables → Actions → **Variables** tab. Add:
-   - `END_DATE` — ISO 8601 string, e.g. `2026-03-31T12:00:00+02:00`
-   - `END_MESSAGE` — string, e.g. `Dobrodošao!`
+1. Push this repo to GitHub (you already have an `origin` remote on `main`).
+2. **Enable Pages**: GitHub → Settings → Pages → Build and deployment → Source: **Deploy from a branch** → Branch: **`gh-pages`** / **`(root)`**. (The branch is created automatically by your first deploy — you may need to come back here after that to select it.)
 
-   These are repository Variables (not Secrets) — they're not sensitive, and the workflow reads them as `${{ vars.END_DATE }}` / `${{ vars.END_MESSAGE }}`.
+### Deploying
 
-3. Push to `main`, or trigger the workflow manually from the Actions tab. The published URL is shown in the deploy job summary.
+1. Create a `.env` (or `.env.local`) with the values you want baked into this build:
 
-To change the countdown date or message later, update the repo Variables and re-run the workflow — no code change required.
+   ```
+   VITE_END_DATE=2026-07-21T01:00:00+02:00
+   VITE_END_MESSAGE=Dobrodošao!
+   ```
+
+2. Run:
+
+   ```bash
+   npm run deploy
+   ```
+
+   This runs `npm run build` (typecheck + Vite build → `dist/`), then `gh-pages -d dist`, which commits the contents of `dist/` to the `gh-pages` branch on `origin` and force-pushes it.
+
+3. Wait ~1 minute, then visit `https://<your-user>.github.io/<repo>/`.
+
+### Updating the countdown later
+
+Edit `.env`, run `npm run deploy` again. No code change required.
 
 ## Project layout
 
@@ -88,8 +103,7 @@ To change the countdown date or message later, update the repo Variables and re-
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── package.json
-├── .env.example             # documents VITE_END_DATE / VITE_END_MESSAGE
-└── .github/workflows/deploy.yml
+└── .env.example             # documents VITE_END_DATE / VITE_END_MESSAGE
 ```
 
 ## PWA / service worker
