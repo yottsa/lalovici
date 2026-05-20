@@ -1,23 +1,23 @@
-const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
+import { createApp, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 
-const END_ISO = "2026-03-31T12:00:00+02:00";
-const END_MESSAGE = "Dobrodošao!";
+const END_ISO: string = import.meta.env.VITE_END_DATE ?? "2026-03-31T12:00:00+02:00";
+const END_MESSAGE: string = import.meta.env.VITE_END_MESSAGE ?? "Dobrodošao!";
 
-const hoursSet = new Set([2, 3, 4]);
-const secondsSet = new Set([2, 3, 4]);
+const hoursSet = new Set<number>([2, 3, 4]);
+const secondsSet = new Set<number>([2, 3, 4]);
 
 createApp({
   setup() {
-    const endMessage = ref(END_MESSAGE);
+    const endMessage = ref<string>(END_MESSAGE);
     const endDate = new Date(END_ISO);
 
-    const days = ref(0);
-    const hours = ref(0);
-    const minutes = ref(0);
-    const seconds = ref(0);
-    const ended = ref(false);
+    const days = ref<number>(0);
+    const hours = ref<number>(0);
+    const minutes = ref<number>(0);
+    const seconds = ref<number>(0);
+    const ended = ref<boolean>(false);
 
-    const update = () => {
+    const update = (): void => {
       const now = new Date();
       let diffMs = endDate.getTime() - now.getTime();
       if (diffMs <= 0) {
@@ -43,7 +43,7 @@ createApp({
       seconds.value = Math.floor(diffMs / msInSecond);
     };
 
-    let timerId = null;
+    let timerId: ReturnType<typeof setInterval> | null = null;
 
     onMounted(() => {
       update();
@@ -51,7 +51,7 @@ createApp({
     });
 
     onBeforeUnmount(() => {
-      if (timerId) clearInterval(timerId);
+      if (timerId !== null) clearInterval(timerId);
     });
 
     const hoursPadded = computed(() => String(hours.value).padStart(2, "0"));
@@ -69,15 +69,15 @@ createApp({
     );
     const showSeconds = computed(() => true);
 
-    const daysLabel = computed(() => (days.value == 1 ? "dan" : "dana"));
+    const daysLabel = computed(() => (days.value === 1 ? "dan" : "dana"));
     const hoursLabel = computed(() =>
-      hours.value == 1 ? "sat" : hoursSet.has(hours.value) ? "sata" : "sati"
+      hours.value === 1 ? "sat" : hoursSet.has(hours.value) ? "sata" : "sati"
     );
     const minutesLabel = computed(() =>
-      minutes.value == 1 ? "minut" : "minuta"
+      minutes.value === 1 ? "minut" : "minuta"
     );
     const secondsLabel = computed(() =>
-      seconds.value == 1
+      seconds.value === 1
         ? "sekund"
         : secondsSet.has(seconds.value)
         ? "sekunde"
@@ -106,12 +106,11 @@ createApp({
   },
 }).mount("#app");
 
-// Register service worker with auto-update
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("service-worker.js")
-      .then((reg) => {
+      .then((reg: ServiceWorkerRegistration) => {
         console.log("Service Worker registered:", reg);
 
         reg.addEventListener("updatefound", () => {
@@ -134,7 +133,7 @@ if ("serviceWorker" in navigator) {
           window.location.reload();
         });
       })
-      .catch((err) =>
+      .catch((err: unknown) =>
         console.error("Service Worker registration failed:", err)
       );
   });

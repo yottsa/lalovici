@@ -1,9 +1,8 @@
-const CACHE_NAME = 'lalovici-cache-v2';
+const CACHE_NAME = 'lalovici-cache-v3';
 const FILES_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './service-worker.js',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
