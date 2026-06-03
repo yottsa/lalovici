@@ -59,7 +59,9 @@ The build emits `dist/` with hashed asset filenames, the PWA manifest, the servi
 
 Deployment is fully automated by GitHub Actions (`.github/workflows/deploy.yml`). **Every push to `main` builds the site on a GitHub runner and publishes it to Pages** — there is no local build step and no `gh-pages` branch.
 
-The countdown values come from **GitHub Actions repository variables**, _not_ from your local `.env`. Your local `.env` only affects `npm run dev` / a local `npm run build`; it is gitignored and never reaches the runner.
+The countdown values come from **GitHub Actions environment variables** stored in a named environment called **`production`**, _not_ from your local `.env`. Your local `.env` only affects `npm run dev` / a local `npm run build`; it is gitignored and never reaches the runner.
+
+> The environment name matters: the `build` job in `.github/workflows/deploy.yml` declares `environment: production`, and `${{ vars.VITE_END_DATE }}` only resolves to that environment's variables because of that line. If you name the environment something else, change that line to match.
 
 ### One-time repo setup
 
@@ -69,13 +71,15 @@ Do this once, in the GitHub web UI:
 
    > ⚠️ It must be **GitHub Actions**, not "Deploy from a branch". If a `gh-pages` branch still exists from the old flow, delete it (`git push origin --delete gh-pages`) so it can't be served by mistake.
 
-2. **Set the countdown variables**: Settings → Secrets and variables → **Actions** → **Variables** tab → **New repository variable**, twice:
+2. **Create the environment and add the variables**: Settings → **Environments** → **New environment** → name it **`production`**. Open it → **Environment variables** → **Add variable**, twice:
 
    | Name | Example value |
    |------|---------------|
    | `VITE_END_DATE` | `2026-07-21T01:00:00+02:00` |
    | `VITE_END_MESSAGE` | `Dobrodošao!` |
 
+   > (You can also reach this via Settings → Secrets and variables → Actions → Variables → **Manage environment variables**.)
+   >
    > If `VITE_END_DATE` is unset/empty, the build falls back to the hardcoded default in `src/main.ts` (`2026-03-31T12:00:00+02:00`).
 
 ### Deploying new changes
@@ -96,7 +100,7 @@ You can also trigger a deploy without a code change: Actions tab → **Deploy to
 
 No code change or push needed:
 
-1. Settings → Secrets and variables → Actions → Variables → edit `VITE_END_DATE` (and/or `VITE_END_MESSAGE`).
+1. Settings → Environments → **`production`** → edit `VITE_END_DATE` (and/or `VITE_END_MESSAGE`).
 2. Actions tab → **Deploy to GitHub Pages** → **Run workflow** to rebuild with the new value.
 
 > The deployed JS filename is content-hashed (e.g. `index-XXXXXXXX.js`). If you change the date and the filename _doesn't_ change, the new value didn't make it into the build — check that the `VITE_END_DATE` **variable** (not your `.env`) was updated.

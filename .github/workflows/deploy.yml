@@ -17,6 +17,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Must match the GitHub environment that holds VITE_END_DATE / VITE_END_MESSAGE.
+    # Settings -> Environments -> create "production" and add the variables there.
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
