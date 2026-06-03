@@ -57,35 +57,49 @@ The build emits `dist/` with hashed asset filenames, the PWA manifest, the servi
 
 ## Deployment to GitHub Pages
 
-The site is built locally on your machine and published to a `gh-pages` branch using the [`gh-pages`](https://www.npmjs.com/package/gh-pages) package. No GitHub Actions, no server-side build.
+Deployment is fully automated by GitHub Actions (`.github/workflows/deploy.yml`). **Every push to `main` builds the site on a GitHub runner and publishes it to Pages** — there is no local build step and no `gh-pages` branch.
+
+The countdown values come from **GitHub Actions repository variables**, _not_ from your local `.env`. Your local `.env` only affects `npm run dev` / a local `npm run build`; it is gitignored and never reaches the runner.
 
 ### One-time repo setup
 
-1. Push this repo to GitHub (you already have an `origin` remote on `main`).
-2. **Enable Pages**: GitHub → Settings → Pages → Build and deployment → Source: **Deploy from a branch** → Branch: **`gh-pages`** / **`(root)`**. (The branch is created automatically by your first deploy — you may need to come back here after that to select it.)
+Do this once, in the GitHub web UI:
 
-### Deploying
+1. **Set Pages source to Actions**: Settings → Pages → Build and deployment → Source: **GitHub Actions**.
 
-1. Create a `.env` (or `.env.local`) with the values you want baked into this build:
+   > ⚠️ It must be **GitHub Actions**, not "Deploy from a branch". If a `gh-pages` branch still exists from the old flow, delete it (`git push origin --delete gh-pages`) so it can't be served by mistake.
 
-   ```
-   VITE_END_DATE=2026-07-21T01:00:00+02:00
-   VITE_END_MESSAGE=Dobrodošao!
-   ```
+2. **Set the countdown variables**: Settings → Secrets and variables → **Actions** → **Variables** tab → **New repository variable**, twice:
 
-2. Run:
+   | Name | Example value |
+   |------|---------------|
+   | `VITE_END_DATE` | `2026-07-21T01:00:00+02:00` |
+   | `VITE_END_MESSAGE` | `Dobrodošao!` |
 
-   ```bash
-   npm run deploy
-   ```
+   > If `VITE_END_DATE` is unset/empty, the build falls back to the hardcoded default in `src/main.ts` (`2026-03-31T12:00:00+02:00`).
 
-   This runs `npm run build` (typecheck + Vite build → `dist/`), then `gh-pages -d dist`, which commits the contents of `dist/` to the `gh-pages` branch on `origin` and force-pushes it.
+### Deploying new changes
 
-3. Wait ~1 minute, then visit `https://<your-user>.github.io/<repo>/`.
+Just push to `main`:
 
-### Updating the countdown later
+```bash
+git add -A
+git commit -m "your message"
+git push origin main
+```
 
-Edit `.env`, run `npm run deploy` again. No code change required.
+The **Deploy to GitHub Pages** workflow runs automatically (watch it under the repo's **Actions** tab). After it finishes (~1–2 min), visit `https://<your-user>.github.io/<repo>/`.
+
+You can also trigger a deploy without a code change: Actions tab → **Deploy to GitHub Pages** → **Run workflow** (this uses `workflow_dispatch`).
+
+### Updating the countdown date/message later
+
+No code change or push needed:
+
+1. Settings → Secrets and variables → Actions → Variables → edit `VITE_END_DATE` (and/or `VITE_END_MESSAGE`).
+2. Actions tab → **Deploy to GitHub Pages** → **Run workflow** to rebuild with the new value.
+
+> The deployed JS filename is content-hashed (e.g. `index-XXXXXXXX.js`). If you change the date and the filename _doesn't_ change, the new value didn't make it into the build — check that the `VITE_END_DATE` **variable** (not your `.env`) was updated.
 
 ## Project layout
 
