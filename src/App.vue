@@ -72,8 +72,10 @@ const cardEvents = {
   pointerup: cancelPress,
   pointerleave: cancelPress,
   pointercancel: cancelPress,
-  // Stop the long-press context menu on touch devices.
+  // Stop the long-press context menu and text selection on touch devices;
+  // either would otherwise fire pointercancel and abort the press.
   contextmenu: (event: Event) => event.preventDefault(),
+  selectstart: (event: Event) => event.preventDefault(),
 };
 </script>
 
@@ -113,11 +115,18 @@ const cardEvents = {
 </template>
 
 <style scoped>
-.card {
+/* Applied to the card's text too: user-select isn't reliably inherited (iOS). */
+.card,
+.card * {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* No native gestures start on a card, so the browser never cancels the press. */
+.card {
+  touch-action: none;
 }
 
 .end-date-dialog {
