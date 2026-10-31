@@ -114,18 +114,20 @@ No code change or push needed:
 │   ├── main.ts              # Vue app + countdown logic + SW registration
 │   └── vite-env.d.ts        # types for import.meta.env.VITE_*
 ├── public/                  # copied as-is into dist/ (not type-checked)
-│   ├── manifest.json
-│   ├── service-worker.js
 │   └── icons/
-├── vite.config.ts
+├── vite.config.ts           # Vite + vite-plugin-pwa (manifest & service worker)
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── package.json
 └── .env.example             # documents VITE_END_DATE / VITE_END_MESSAGE
 ```
 
-## PWA / service worker
+## PWA / offline support
 
-The service worker (`public/service-worker.js`, cache name `lalovici-cache-v3`) precaches the app shell (HTML, manifest, icons) on install and serves all GET requests network-first with cache fallback. The hashed JS bundle is cached lazily on first fetch, so offline support kicks in after one online visit. The page registers the worker on `load` and auto-reloads when a new version activates.
+The app is an installable PWA built with [`vite-plugin-pwa`](https://vite-pwa-org.netlify.app/) (Workbox, `generateSW` mode). The manifest and service worker are generated at build time from `vite.config.ts` (`dist/manifest.webmanifest`, `dist/sw.js`).
 
-The SW stays plain JavaScript because files under `public/` are copied verbatim by Vite — they are not transformed or type-checked.
+- **Fully offline after the first visit**: on install, the service worker precaches the entire build (HTML, hashed JS bundle, icons, manifest). Once installed (or opened once online), the app opens and runs without any network connection.
+- **Updates**: when a new version is deployed and the app is opened online, the new worker installs, activates immediately (`registerType: 'autoUpdate'`), and the page reloads with the new build. Old caches are cleaned up automatically.
+- Registration happens in `src/main.ts` via `registerSW` from `virtual:pwa-register`.
+
+To test offline locally: `npm run build && npm run preview`, open the page once, then in DevTools → Network select **Offline** and reload.

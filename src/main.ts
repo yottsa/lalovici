@@ -1,7 +1,9 @@
 import { createApp, ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { registerSW } from 'virtual:pwa-register';
 
-const END_ISO: string = import.meta.env.VITE_END_DATE ?? "2026-03-31T12:00:00+02:00";
-const END_MESSAGE: string = import.meta.env.VITE_END_MESSAGE ?? "Dobrodošao!";
+// `||` (not `??`): in CI an unset `${{ vars.X }}` is passed as "", not undefined.
+const END_ISO: string = import.meta.env.VITE_END_DATE || "2026-03-31T12:00:00+02:00";
+const END_MESSAGE: string = import.meta.env.VITE_END_MESSAGE || "Dobrodošao!";
 
 const hoursSet = new Set<number>([2, 3, 4]);
 const secondsSet = new Set<number>([2, 3, 4]);
@@ -108,35 +110,4 @@ createApp({
   },
 }).mount("#app");
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("service-worker.js")
-      .then((reg: ServiceWorkerRegistration) => {
-        console.log("Service Worker registered:", reg);
-
-        reg.addEventListener("updatefound", () => {
-          const newWorker = reg.installing;
-          if (newWorker) {
-            newWorker.addEventListener("statechange", () => {
-              if (
-                newWorker.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
-                console.log("New version found — activating...");
-                newWorker.postMessage("skipWaiting");
-              }
-            });
-          }
-        });
-
-        navigator.serviceWorker.addEventListener("controllerchange", () => {
-          console.log("Reloading for new SW...");
-          window.location.reload();
-        });
-      })
-      .catch((err: unknown) =>
-        console.error("Service Worker registration failed:", err)
-      );
-  });
-}
+registerSW({ immediate: true });
