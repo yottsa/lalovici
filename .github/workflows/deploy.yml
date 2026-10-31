@@ -12,7 +12,8 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # Never cancel a Pages deploy midway; queue the next one instead.
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -25,10 +26,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci
+
+      - run: npm test
 
       - run: npm run build
         env:

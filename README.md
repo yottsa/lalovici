@@ -4,7 +4,7 @@ A single-page Vue 3 + TypeScript countdown timer (days / hours / minutes / secon
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 22+
 - npm
 
 ## Local development
@@ -14,7 +14,7 @@ npm install
 npm run dev
 ```
 
-Vite serves the app at `http://localhost:5173`. Vue is bundled from `node_modules` — no CDN.
+Vite serves the app at `http://localhost:5173`. Vue is bundled from `node_modules` — no CDN. Templates are precompiled, so only the Vue runtime ships.
 
 With no `.env` set, the app falls back to:
 
@@ -30,18 +30,21 @@ VITE_END_MESSAGE=Welcome!
 
 See `.env.example` for the template.
 
-## Type checking
+## Type checking and tests
 
 ```bash
-npm run typecheck  # runs vue-tsc --noEmit
+npm run typecheck  # vue-tsc on src/ and on vite.config.ts
+npm test           # Vitest unit tests (countdown maths, Serbian plural labels)
 ```
 
-`npm run build` runs the same typecheck before bundling, so type errors fail the build.
+`npm run build` runs the same typecheck before bundling, so type errors fail the build. CI runs the tests before every deploy.
+
+A malformed `VITE_END_DATE` (anything `Date.parse` can't read) also fails the build, so a typo in the GitHub variable never ships a broken countdown.
 
 ## Production build
 
 ```bash
-npm run build      # vue-tsc --noEmit && vite build → outputs to dist/
+npm run build      # typecheck && vite build → outputs to dist/
 npm run preview    # serves dist/ locally for sanity checking
 ```
 
@@ -109,13 +112,16 @@ No code change or push needed:
 
 ```
 .
-├── index.html               # entry HTML (Vite-served)
+├── index.html               # entry HTML (Vite-served) + global styles
 ├── src/
-│   ├── main.ts              # Vue app + countdown logic + SW registration
-│   └── vite-env.d.ts        # types for import.meta.env.VITE_*
+│   ├── main.ts              # reads env config, mounts App, registers the SW
+│   ├── App.vue              # countdown component (template + timer)
+│   ├── countdown.ts         # pure helpers: time split, Serbian plurals, padding
+│   ├── countdown.test.ts    # Vitest tests for countdown.ts
+│   └── vite-env.d.ts        # types for import.meta.env.VITE_* and the PWA virtual module
 ├── public/                  # copied as-is into dist/ (not type-checked)
 │   └── icons/
-├── vite.config.ts           # Vite + vite-plugin-pwa (manifest & service worker)
+├── vite.config.ts           # Vite + Vue plugin + vite-plugin-pwa, VITE_END_DATE check
 ├── tsconfig.json
 ├── tsconfig.node.json
 ├── package.json

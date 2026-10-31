@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -24,34 +24,16 @@
       href="/icons/favicon-16x16.png"
     />
 
-    <!-- Android Chrome icons -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="/icons/android-chrome-192x192.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="512x512"
-      href="/icons/android-chrome-512x512.png"
-    />
-
     <!-- PWA essentials -->
     <meta name="theme-color" content="#f8f9fb" />
-    <link rel="icon" href="/icons/icon-192.png" />
 
     <!-- iOS PWA support -->
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Lalovići" />
 
     <style>
-      [v-cloak] {
-        display: none !important;
-      }
       html,
       body,
       #app {
@@ -64,7 +46,7 @@
         align-items: center;
         justify-content: center;
         background: #f8f9fb;
-        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto,
           "Helvetica Neue", Arial;
       }
       .wrapper {
@@ -125,27 +107,7 @@
   </head>
 
   <body>
-    <div id="app" class="wrapper" v-cloak>
-      <div v-if="ended" class="ended">{{ endMessage }}</div>
-      <div v-else class="countdown">
-        <div class="card" v-if="showDays">
-          <div class="num">{{ days }}</div>
-          <div class="label">{{ daysLabel }}</div>
-        </div>
-        <div class="card" v-if="showHours">
-          <div class="num">{{ hoursPadded }}</div>
-          <div class="label">{{ hoursLabel }}</div>
-        </div>
-        <div class="card" v-if="showMinutes">
-          <div class="num">{{ minutesPadded }}</div>
-          <div class="label">{{ minutesLabel }}</div>
-        </div>
-        <div class="card" v-if="showSeconds">
-          <div class="num">{{ secondsPadded }}</div>
-          <div class="label">{{ secondsLabel }}</div>
-        </div>
-      </div>
-    </div>
+    <div id="app" class="wrapper"></div>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
