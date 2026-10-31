@@ -46,3 +46,11 @@ export const minutesLabel = (n: number): string => plural(n, "minut", "minuta", 
 export const secondsLabel = (n: number): string => plural(n, "sekund", "sekunde", "sekundi");
 
 export const pad2 = (n: number): string => String(n).padStart(2, "0");
+
+const endDateFormat = new Intl.DateTimeFormat("sr-Latn", {
+  dateStyle: "full",
+  timeStyle: "short",
+});
+
+/** Formats the end date in Serbian, in the viewer's local time zone. */
+export const formatEndDate = (date: Date): string => endDateFormat.format(date);

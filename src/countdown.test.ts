@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   daysLabel,
+  formatEndDate,
   hoursLabel,
   minutesLabel,
   pad2,
@@ -43,5 +44,12 @@ describe("pad2", () => {
   it("pads single digits", () => {
     expect(pad2(7)).toBe("07");
     expect(pad2(42)).toBe("42");
+  });
+});
+
+describe("formatEndDate", () => {
+  it("formats the date in Serbian with weekday, month name and time", () => {
+    // Local time (no offset) so the result doesn't depend on the runner's time zone.
+    expect(formatEndDate(new Date(2026, 2, 31, 12, 0))).toBe("utorak, 31. mart 2026. 12:00");
   });
 });

@@ -1,6 +1,6 @@
 # Lalovići
 
-A single-page Vue 3 + TypeScript countdown timer (days / hours / minutes / seconds), packaged as a small PWA and deployable to GitHub Pages. The countdown target date and the post-countdown message are configurable via build-time environment variables.
+A single-page Vue 3 + TypeScript countdown timer (days / hours / minutes / seconds), packaged as a small PWA and deployable to GitHub Pages. The countdown target date and the post-countdown message are configurable via build-time environment variables. Pressing and holding any countdown card for 3 seconds opens a dialog showing the target date (formatted in Serbian, in the viewer's local time zone).
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ Vite serves the app at `http://localhost:5173`. Vue is bundled from `node_module
 
 With no `.env` set, the app falls back to:
 
-- `END_DATE = 2026-03-31T12:00:00+02:00`
+- `END_DATE = 2027-03-31T12:00:00+02:00`
 - `END_MESSAGE = Dobrodošao!`
 
 To override locally, create a `.env.local` file (gitignored):
@@ -83,7 +83,7 @@ Do this once, in the GitHub web UI:
 
    > (You can also reach this via Settings → Secrets and variables → Actions → Variables → **Manage environment variables**.)
    >
-   > If `VITE_END_DATE` is unset/empty, the build falls back to the hardcoded default in `src/main.ts` (`2026-03-31T12:00:00+02:00`).
+   > If `VITE_END_DATE` is unset/empty, the build falls back to the hardcoded default in `src/main.ts` (`2027-03-31T12:00:00+02:00`).
 
 ### Deploying new changes
 
@@ -135,5 +135,7 @@ The app is an installable PWA built with [`vite-plugin-pwa`](https://vite-pwa-or
 - **Fully offline after the first visit**: on install, the service worker precaches the entire build (HTML, hashed JS bundle, icons, manifest). Once installed (or opened once online), the app opens and runs without any network connection.
 - **Updates**: when a new version is deployed and the app is opened online, the new worker installs, activates immediately (`registerType: 'autoUpdate'`), and the page reloads with the new build. Old caches are cleaned up automatically.
 - Registration happens in `src/main.ts` via `registerSW` from `virtual:pwa-register`.
+
+`package.json` `overrides` bump `glob` (in `workbox-build`) and `ejs` (in `@trickfilm400/rollup-plugin-off-main-thread`) to patched versions to clear `npm audit` advisories in the build tooling; remove them once vite-plugin-pwa ships updated dependencies. One low-severity advisory (`deepmerge`) remains because no patched version exists; it only runs at build time on this project's own config.
 
 To test offline locally: `npm run build && npm run preview`, open the page once, then in DevTools → Network select **Offline** and reload.
