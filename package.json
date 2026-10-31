@@ -29,8 +29,6 @@
     "workbox-build": {
       "glob": "^14.0.3"
     },
-    "@trickfilm400/rollup-plugin-off-main-thread": {
-      "ejs": "^7.0.2"
-    }
+    "ejs": "^7.0.2"
   }
 }

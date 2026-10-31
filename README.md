@@ -136,6 +136,6 @@ The app is an installable PWA built with [`vite-plugin-pwa`](https://vite-pwa-or
 - **Updates**: when a new version is deployed and the app is opened online, the new worker installs, activates immediately (`registerType: 'autoUpdate'`), and the page reloads with the new build. Old caches are cleaned up automatically.
 - Registration happens in `src/main.ts` via `registerSW` from `virtual:pwa-register`.
 
-`package.json` `overrides` bump `glob` (in `workbox-build`) and `ejs` (in `@trickfilm400/rollup-plugin-off-main-thread`) to patched versions to clear `npm audit` advisories in the build tooling; remove them once vite-plugin-pwa ships updated dependencies. One low-severity advisory (`deepmerge`) remains because no patched version exists; it only runs at build time on this project's own config.
+`package.json` `overrides` bump `glob` (in `workbox-build`) and `ejs` (only used by `workbox-build`'s off-main-thread plugin) to patched versions to clear `npm audit` advisories in the build tooling; remove them once vite-plugin-pwa ships updated dependencies. One low-severity advisory (`deepmerge`) remains because no patched version exists; it only runs at build time on this project's own config.
 
 To test offline locally: `npm run build && npm run preview`, open the page once, then in DevTools → Network select **Offline** and reload.
